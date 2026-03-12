@@ -3,6 +3,9 @@ import { nextCookies } from "better-auth/next-js";
 import "@/lib/env-validation"; // Validate environment on import
 
 export const auth = betterAuth({
+  baseURL: process.env.BETTER_AUTH_URL,
+  trustedOrigins: [process.env.BETTER_AUTH_URL!],
+
   socialProviders: {
     microsoft: {
       clientId: process.env.MICROSOFT_CLIENT_ID!,
