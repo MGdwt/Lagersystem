@@ -1,0 +1,14 @@
+name: Self Hosted Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Run deployment script
+        run: bash /home/admin_inv/deploy.sh
