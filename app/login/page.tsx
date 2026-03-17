@@ -1,5 +1,5 @@
 "use client";
-
+// hello
 import { authClient } from "@/lib/auth-client";
 import { useState } from "react";
 
@@ -21,8 +21,22 @@ export default function LoginPage() {
   }
 
   return (
-    <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", background: "#fafafa" }}>
-      <div style={{ background: "white", padding: 24, borderRadius: 16, border: "1px solid rgba(0,0,0,0.1)" }}>
+    <main
+      style={{
+        minHeight: "100vh",
+        display: "grid",
+        placeItems: "center",
+        background: "#fafafa",
+      }}
+    >
+      <div
+        style={{
+          background: "white",
+          padding: 24,
+          borderRadius: 16,
+          border: "1px solid rgba(0,0,0,0.1)",
+        }}
+      >
         <h1 style={{ margin: 0, fontSize: 18 }}>Login IT-Support</h1>
 
         <button
