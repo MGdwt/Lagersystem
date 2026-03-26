@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  basePath: "/scanner",
+  assetPrefix: "/scanner",
   output: "standalone",
   async headers() {
     return [
