@@ -8,5 +8,5 @@ export default async function Home() {
     headers: await headers(),
   });
 
-  redirect(session ? "/scanner" : "/login");
+  redirect(session ? "/scannerpage/scanner" : "/scannerpage/login");
 }
