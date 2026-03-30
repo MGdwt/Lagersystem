@@ -3,9 +3,10 @@ import { nextCookies } from "better-auth/next-js";
 import "@/lib/env-validation";
 
 export const auth = betterAuth({
-  baseURL: process.env.BETTER_AUTH_URL,
+  //baseURL: process.env.BETTER_AUTH_URL,
   trustedOrigins: [process.env.BETTER_AUTH_TRUSTED!],
-  basePath: "/scannerpage/api/auth",
+  baseURL:
+    "https://it-lagersystem.deutsche-windtechnik.com/scannerpage/api/auth",
 
   socialProviders: {
     microsoft: {
