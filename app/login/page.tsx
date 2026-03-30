@@ -11,7 +11,7 @@ export default function LoginPage() {
 
     const { error } = await authClient.signIn.social({
       provider: "microsoft",
-      callbackURL: "/scanner",
+      callbackURL: "/scannerpage",
     });
 
     if (error) {
