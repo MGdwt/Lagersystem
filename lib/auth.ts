@@ -5,6 +5,7 @@ import "@/lib/env-validation";
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   trustedOrigins: [process.env.BETTER_AUTH_TRUSTED!],
+  basePath: "/scannerpage/api/auth",
 
   socialProviders: {
     microsoft: {
