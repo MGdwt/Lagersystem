@@ -39,7 +39,7 @@ async function inventreeFetch(path: string, init?: RequestInit) {
   if (!base || !token)
     throw new Error("Server ENV fehlt (INVENTREE_URL/INVENTREE_TOKEN).");
 
-  const url = `${base}${path}`;
+  const url = new URL(path, base).toString();
   const res = await fetch(url, {
     ...init,
     headers: {
