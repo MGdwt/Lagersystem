@@ -40,6 +40,7 @@ async function inventreeFetch(path: string, init?: RequestInit) {
     throw new Error("Server ENV fehlt (INVENTREE_URL/INVENTREE_TOKEN).");
 
   const url = new URL(path, base).toString();
+  console.log(url);
   const res = await fetch(url, {
     ...init,
     headers: {
@@ -89,12 +90,14 @@ export async function GET(req: Request) {
     const partRes = await inventreeFetch(
       `/api/part/?search=${encodeURIComponent(barcode)}`,
     );
+    console.log(partRes);
     if (!partRes.ok) {
       return NextResponse.json(
         { error: "Failed to fetch part data" },
         { status: 500 },
       );
     }
+
     const partJson = await partRes.json();
     const parts = Array.isArray(partJson)
       ? partJson
