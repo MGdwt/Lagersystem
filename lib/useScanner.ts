@@ -11,7 +11,6 @@ import {
 } from "@/lib/scanner-types";
 
 const MAX_HISTORY = 20;
-const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH?.replace(/\/$/, "") ?? "";
 
 export function useScanner() {
   const queryClient = useQueryClient();
@@ -101,8 +100,9 @@ export function useScanner() {
       const data = await queryClient.fetchQuery({
         queryKey: ["part-preview", cleaned],
         queryFn: async () => {
-          const apiUrl = `${BASE_PATH}/api/part-preview?barcode=${cleaned}`;
-          const res = await fetch(apiUrl);
+          const res = await fetch(
+            `https://it-lagersystem.deutsche-windtechnik.com/scannerpage/api/part-preview?barcode=${cleaned}`,
+          );
           const data = await res.json();
           if (!res.ok) throw new Error(data.error ?? "Produkt nicht gefunden");
           return data;
