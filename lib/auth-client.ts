@@ -1,6 +1,5 @@
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-  baseURL:
-    "https://it-lagersystem.deutsche-windtechnik.com/scannerpage/api/auth",
+  baseURL: "/api/auth",
 });
