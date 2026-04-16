@@ -8,7 +8,9 @@ export default async function ScannerPage() {
     headers: await headers(),
   });
 
-  if (!session) redirect("/scannerpage/login");
-
-  return <ScannerClient />;
+  if (session) {
+    redirect("./scanner");
+  } else {
+    redirect("./login");
+  }
 }
