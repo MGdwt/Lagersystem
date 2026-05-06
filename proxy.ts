@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  if (!pathname.startsWith("/scannerpage/scanner")) {
+  if (!pathname.startsWith("/scanner")) {
     return NextResponse.next();
   }
 
@@ -14,7 +14,7 @@ export async function proxy(req: NextRequest) {
   });
 
   if (!session) {
-    return NextResponse.redirect(new URL("/scannerpage/login", req.url));
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   return NextResponse.next();
