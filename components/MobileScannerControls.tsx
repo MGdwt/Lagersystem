@@ -87,7 +87,7 @@ export function MobileScannerControls({
         <Input
           type="number"
           value={delta}
-          onChange={(e) => onDeltaChange(parseInt(e.target.value || "0", 10))}
+          onChange={(e) => onDeltaChange(parseInt(e.target.value || "", 10))}
           placeholder="+ / - Menge"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
