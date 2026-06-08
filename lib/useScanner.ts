@@ -216,23 +216,7 @@ export function useScanner() {
         const track = stream?.getVideoTracks()?.[0] ?? null;
         videoTrackRef.current = track;
 
-        const supportedConstraints =
-          (navigator.mediaDevices?.getSupportedConstraints?.() ?? {}) as
-            | MediaTrackSupportedConstraints
-            | Record<string, unknown>;
-
-        if (track) {
-          const capabilities =
-            track.getCapabilities() as MediaTrackCapabilities & {
-              torch?: boolean;
-            };
-          setTorchSupported(
-            capabilities.torch === true ||
-              Boolean((supportedConstraints as any).torch),
-          );
-        } else {
-          setTorchSupported(Boolean((supportedConstraints as any).torch));
-        }
+        setTorchSupported(Boolean(track));
       } catch (error) {
         console.error("Camera error:", error);
         setCameraOn(false);
@@ -300,17 +284,15 @@ export function useScanner() {
     toggleTorch: async () => {
       const track = videoTrackRef.current;
       if (!track) return;
-      const capabilities = track.getCapabilities() as MediaTrackCapabilities & {
-        torch?: boolean;
-      };
-      if (!capabilities.torch) return;
       try {
         await track.applyConstraints({
           advanced: [{ torch: !torchOn } as any],
         } as any);
         setTorchOn((prev) => !prev);
+        setTorchSupported(true);
       } catch (error) {
         console.error("Torch toggle error:", error);
+        setTorchSupported(false);
         setTorchOn(false);
       }
     },
