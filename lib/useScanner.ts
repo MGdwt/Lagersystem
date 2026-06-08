@@ -211,18 +211,27 @@ export function useScanner() {
           },
         );
 
-        const stream = videoRef.current.srcObject as MediaStream | null;
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        const stream = videoRef.current?.srcObject as MediaStream | null;
         const track = stream?.getVideoTracks()?.[0] ?? null;
         videoTrackRef.current = track;
+
+        const supportedConstraints =
+          (navigator.mediaDevices?.getSupportedConstraints?.() ?? {}) as
+            | MediaTrackSupportedConstraints
+            | Record<string, unknown>;
 
         if (track) {
           const capabilities =
             track.getCapabilities() as MediaTrackCapabilities & {
               torch?: boolean;
             };
-          setTorchSupported(Boolean(capabilities.torch));
+          setTorchSupported(
+            capabilities.torch === true ||
+              Boolean((supportedConstraints as any).torch),
+          );
         } else {
-          setTorchSupported(false);
+          setTorchSupported(Boolean((supportedConstraints as any).torch));
         }
       } catch (error) {
         console.error("Camera error:", error);
