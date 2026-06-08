@@ -22,6 +22,7 @@ export function useScanner() {
 
   const [infoTitle, setInfoTitle] = useState("Bereit");
   const [infoBody, setInfoBody] = useState("Drücke „Scannen starten“.");
+  const [debugInfo, setDebugInfo] = useState("");
 
   const [operator, setOperator] = useState("");
 
@@ -69,6 +70,7 @@ export function useScanner() {
     setCameraOn(false);
     setTorchOn(false);
     setTorchSupported(false);
+    setDebugInfo("");
     setBarcode("");
     setDelta(0);
     scanBufferRef.current = "";
@@ -211,16 +213,48 @@ export function useScanner() {
           },
         );
 
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        const stream = videoRef.current?.srcObject as MediaStream | null;
-        const track = stream?.getVideoTracks()?.[0] ?? null;
-        videoTrackRef.current = track;
+        const updateTorchSupported = () => {
+          const stream = videoRef.current?.srcObject as MediaStream | null;
+          const newTrack = stream?.getVideoTracks()?.[0] ?? null;
+          videoTrackRef.current = newTrack;
+          setTorchSupported(Boolean(newTrack));
+          if (!newTrack) {
+            setDebugInfo(
+              "Keine Video-Track gefunden nach loadedmetadata. Möglicherweise wird die Kamera noch nicht vollständig initialisiert oder der Browser unterstützt Torch nicht.",
+            );
+          } else {
+            setDebugInfo("");
+          }
+        };
 
-        setTorchSupported(Boolean(track));
+        if (videoRef.current) {
+          if (videoRef.current.readyState >= 1) {
+            updateTorchSupported();
+          } else {
+            const onLoadedMetadata = () => {
+              updateTorchSupported();
+              videoRef.current?.removeEventListener(
+                "loadedmetadata",
+                onLoadedMetadata,
+              );
+            };
+            videoRef.current.addEventListener(
+              "loadedmetadata",
+              onLoadedMetadata,
+            );
+          }
+        } else {
+          updateTorchSupported();
+        }
       } catch (error) {
         console.error("Camera error:", error);
         setCameraOn(false);
         setTorchOn(false);
+        setDebugInfo(
+          error instanceof Error
+            ? `${error.name}: ${error.message}`
+            : String(error),
+        );
 
         let errorMessage = "Camera error occurred.";
         if (error instanceof Error) {
@@ -245,6 +279,7 @@ export function useScanner() {
     if (mode === "mobile" && cameraOn) {
       setInfoTitle("Kamera");
       setInfoBody("Halte den Code in die Kamera.");
+      setDebugInfo("");
       startCamera();
     }
 
@@ -263,7 +298,7 @@ export function useScanner() {
     barcode,
     delta,
     infoTitle,
-    infoBody,
+    infoBody: debugInfo ? `${infoBody}\n\nDebug:\n${debugInfo}` : infoBody,
     operator,
     history,
     cameraOn,
@@ -290,10 +325,16 @@ export function useScanner() {
         } as any);
         setTorchOn((prev) => !prev);
         setTorchSupported(true);
+        setDebugInfo("");
       } catch (error) {
         console.error("Torch toggle error:", error);
         setTorchSupported(false);
         setTorchOn(false);
+        setDebugInfo(
+          error instanceof Error
+            ? `Torch toggle failed: ${error.name}: ${error.message}`
+            : `Torch toggle failed: ${String(error)}`,
+        );
       }
     },
 
