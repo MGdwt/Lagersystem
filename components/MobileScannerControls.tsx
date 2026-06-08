@@ -18,6 +18,9 @@ interface MobileScannerControlsProps {
   onDeltaChange: (delta: number) => void;
   onFinalizeScan: (raw: string) => void;
   onBook: () => void;
+  onToggleTorch: () => void;
+  torchOn: boolean;
+  torchSupported: boolean;
   videoRef: React.RefObject<HTMLVideoElement | null>;
 }
 
@@ -35,6 +38,9 @@ export function MobileScannerControls({
   onDeltaChange,
   onFinalizeScan,
   onBook,
+  onToggleTorch,
+  torchOn,
+  torchSupported,
   videoRef,
 }: MobileScannerControlsProps) {
   return (
@@ -58,6 +64,12 @@ export function MobileScannerControls({
           ref={videoRef}
           className="w-full rounded-xl border border-black/10 bg-white"
         />
+      )}
+
+      {cameraOn && torchSupported && (
+        <Button variant="outline" onClick={onToggleTorch} className="w-full">
+          {torchOn ? "Taschenlampe aus" : "Taschenlampe an"}
+        </Button>
       )}
 
       <div className="space-y-1">

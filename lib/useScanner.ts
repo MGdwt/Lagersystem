@@ -45,6 +45,9 @@ export function useScanner() {
   // Mobile camera
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [cameraOn, setCameraOn] = useState(false);
+  const [torchOn, setTorchOn] = useState(false);
+  const [torchSupported, setTorchSupported] = useState(false);
+  const videoTrackRef = useRef<MediaStreamTrack | null>(null);
 
   const isMobile = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -64,6 +67,8 @@ export function useScanner() {
 
   function resetAll(message?: { title: string; body: string }) {
     setCameraOn(false);
+    setTorchOn(false);
+    setTorchSupported(false);
     setBarcode("");
     setDelta(0);
     scanBufferRef.current = "";
@@ -205,9 +210,24 @@ export function useScanner() {
             controls?.stop();
           },
         );
+
+        const stream = videoRef.current.srcObject as MediaStream | null;
+        const track = stream?.getVideoTracks()?.[0] ?? null;
+        videoTrackRef.current = track;
+
+        if (track) {
+          const capabilities =
+            track.getCapabilities() as MediaTrackCapabilities & {
+              torch?: boolean;
+            };
+          setTorchSupported(Boolean(capabilities.torch));
+        } else {
+          setTorchSupported(false);
+        }
       } catch (error) {
         console.error("Camera error:", error);
         setCameraOn(false);
+        setTorchOn(false);
 
         let errorMessage = "Camera error occurred.";
         if (error instanceof Error) {
@@ -237,6 +257,9 @@ export function useScanner() {
 
     return () => {
       controls?.stop();
+      videoTrackRef.current = null;
+      setTorchSupported(false);
+      setTorchOn(false);
     };
   }, [mode, cameraOn]);
 
@@ -261,6 +284,27 @@ export function useScanner() {
     hasOperator: operator.trim().length > 0,
     canBook: phase === "ready" && operator.trim().length > 0,
     isBooking: phase === "booking",
+
+    // Torch
+    torchOn,
+    torchSupported,
+    toggleTorch: async () => {
+      const track = videoTrackRef.current;
+      if (!track) return;
+      const capabilities = track.getCapabilities() as MediaTrackCapabilities & {
+        torch?: boolean;
+      };
+      if (!capabilities.torch) return;
+      try {
+        await track.applyConstraints({
+          advanced: [{ torch: !torchOn } as any],
+        } as any);
+        setTorchOn((prev) => !prev);
+      } catch (error) {
+        console.error("Torch toggle error:", error);
+        setTorchOn(false);
+      }
+    },
 
     // Actions
     setOperator,

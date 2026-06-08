@@ -167,6 +167,9 @@ export default function ScannerClient() {
                 canEditQty={scanner.canEditQty}
                 canBook={scanner.canBook}
                 onToggleCamera={() => scanner.setCameraOn((v) => !v)}
+                onToggleTorch={scanner.toggleTorch}
+                torchOn={scanner.torchOn}
+                torchSupported={scanner.torchSupported}
                 onCancel={() => scanner.resetAll()}
                 onBarcodeChange={scanner.setBarcode}
                 onDeltaChange={scanner.setDelta}
