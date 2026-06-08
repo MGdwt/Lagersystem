@@ -217,10 +217,26 @@ export function useScanner() {
           const stream = videoRef.current?.srcObject as MediaStream | null;
           const newTrack = stream?.getVideoTracks()?.[0] ?? null;
           videoTrackRef.current = newTrack;
-          setTorchSupported(Boolean(newTrack));
+
           if (!newTrack) {
+            setTorchSupported(false);
             setDebugInfo(
               "Keine Video-Track gefunden nach loadedmetadata. Möglicherweise wird die Kamera noch nicht vollständig initialisiert oder der Browser unterstützt Torch nicht.",
+            );
+            return;
+          }
+
+          const capabilities = newTrack.getCapabilities() as any;
+          const supportedConstraints =
+            (navigator.mediaDevices?.getSupportedConstraints?.() ?? {}) as any;
+
+          const torchCapable =
+            capabilities.torch === true || supportedConstraints.torch === true;
+
+          setTorchSupported(Boolean(torchCapable));
+          if (!torchCapable) {
+            setDebugInfo(
+              "Torch wird von diesem Kameratrack nicht unterstützt. Der Button wird deshalb nicht angezeigt.",
             );
           } else {
             setDebugInfo("");
@@ -330,11 +346,16 @@ export function useScanner() {
         console.error("Torch toggle error:", error);
         setTorchSupported(false);
         setTorchOn(false);
-        setDebugInfo(
-          error instanceof Error
-            ? `Torch toggle failed: ${error.name}: ${error.message}`
-            : `Torch toggle failed: ${String(error)}`,
-        );
+        if (error instanceof Error) {
+          const message =
+            error.name === "OverconstrainedError" ||
+            error.name === "ConstraintNotSatisfiedError"
+              ? "Torch wird von diesem Gerät oder Browser nicht unterstützt."
+              : `${error.name}: ${error.message}`;
+          setDebugInfo(`Torch toggle failed: ${message}`);
+        } else {
+          setDebugInfo(`Torch toggle failed: ${String(error)}`);
+        }
       }
     },
 
