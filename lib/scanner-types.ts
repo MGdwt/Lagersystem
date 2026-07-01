@@ -24,7 +24,7 @@ export const PEOPLE = [
   "Leve",
   "Jorge",
   "Nico",
-  "Philipp",
+  "Philipp R",
   "Bjarne",
   "Felix",
   "Jonas",
@@ -32,5 +32,6 @@ export const PEOPLE = [
   "Lars",
   "Lisa",
   "Michael",
+  "Philipp P",
 ] as const;
 export type Person = (typeof PEOPLE)[number];
